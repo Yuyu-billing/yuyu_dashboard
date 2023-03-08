@@ -110,12 +110,12 @@ class InvoiceUseCase:
     def reset_billing(self, request):
         yuyu_client.post(request, f"invoice/reset_billing/", {})
 
-    def finish_invoice(self, request, id):
-        response = yuyu_client.get(request, f"invoice/{id}/finish/")
+    def finish_invoice(self, request, id, skip_balance):
+        response = yuyu_client.get(request, f"invoice/{id}/finish/?skip_balance={skip_balance}")
         data = response.json()
         return data
 
-    def rollback_to_unpaid_invoice(self, request, id):
-        response = yuyu_client.get(request, f"invoice/{id}/rollback_to_unpaid/")
+    def rollback_to_unpaid_invoice(self, request, id, skip_balance):
+        response = yuyu_client.get(request, f"invoice/{id}/rollback_to_unpaid/?skip_balance={skip_balance}")
         data = response.json()
         return data

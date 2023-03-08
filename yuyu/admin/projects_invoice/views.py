@@ -27,6 +27,7 @@ from horizon import views
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.yuyu.cases.invoice_use_case import InvoiceUseCase
 from .tables import InvoiceTable
+from ...cases.balance_use_case import BalanceUseCase
 from ...cases.setting_use_case import SettingUseCase
 from ...core.usage_cost.tables import InstanceCostTable, VolumeCostTable, FloatingIpCostTable, RouterCostTable, \
     SnapshotCostTable, ImageCostTable
@@ -42,7 +43,7 @@ class IndexView(tables.DataTableView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['project_list'], _ = api.keystone.tenant_list(self.request, user=self.request.user.id)
+        context['project_list'], _ = api.keystone.tenant_list(self.request)
         context['current_project_id'] = self.request.GET.get('project_id', self.request.user.project_id)
         context['current_project_name'] = self.request.GET.get('project_name', self.request.user.project_id)
         return context
@@ -71,6 +72,7 @@ class InvoiceView(views.APIView):
 
     invoice_uc = InvoiceUseCase()
     setting_uc = SettingUseCase()
+    balance_uc = BalanceUseCase()
 
     def get_template_names(self):
         if self.request.GET.get('print', None):
@@ -81,8 +83,11 @@ class InvoiceView(views.APIView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         invoice = self.invoice_uc.get_invoice(self.request, self.kwargs['id'], tenant_id=self.kwargs['project_id'])
+        balance = self.balance_uc.retrieve_by_project(self.request, self.kwargs['project_id'])
         context['invoice'] = invoice
         context['setting'] = self.setting_uc.get_settings(self.request)
+        context['project_balance_amount'] = Money(amount=balance['amount'],
+                                                  currency=balance['amount_currency']) if balance else 0
         context['instance_cost'] = self.get_sum_price(invoice, 'instances')
         context['volume_cost'] = self.get_sum_price(invoice, 'volumes')
         context['fip_cost'] = self.get_sum_price(invoice, 'floating_ips')
@@ -108,6 +113,7 @@ class UsageCostView(tables.MultiTableView):
     template_name = "admin/projects_invoice/cost_tables.html"
 
     invoice_uc = InvoiceUseCase()
+    balance_uc = BalanceUseCase()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -119,7 +125,10 @@ class UsageCostView(tables.MultiTableView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        balance = self.balance_uc.retrieve_by_project(self.request, self.kwargs['project_id'])
         context['invoice'] = self.request.invoice
+        context['project_balance_amount'] = Money(amount=balance['amount'],
+                                                  currency=balance['amount_currency']) if balance else 0
         return context
 
     def _get_flavor_name(self, flavor_id):
@@ -257,7 +266,9 @@ class FinishInvoice(views.APIView):
     invoice_uc = InvoiceUseCase()
 
     def get(self, request, *args, **kwargs):
-        self.invoice_uc.finish_invoice(request, kwargs['id'])
+        skip_balance = request.GET.get('skip_balance', '')
+        self.invoice_uc.\
+            finish_invoice(request, kwargs['id'], skip_balance)
         next_url = request.GET.get('next', reverse('horizon:admin:projects_invoice:index'))
         return HttpResponseRedirect(next_url)
 
@@ -266,6 +277,7 @@ class RollbackToUnpaidInvoice(views.APIView):
     invoice_uc = InvoiceUseCase()
 
     def get(self, request, *args, **kwargs):
-        self.invoice_uc.rollback_to_unpaid_invoice(request, kwargs['id'])
+        skip_balance = request.GET.get('skip_balance', '')
+        self.invoice_uc.rollback_to_unpaid_invoice(request, kwargs['id'], skip_balance)
         next_url = request.GET.get('next', reverse('horizon:admin:projects_invoice:index'))
         return HttpResponseRedirect(next_url)

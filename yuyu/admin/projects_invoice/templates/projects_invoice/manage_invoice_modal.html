@@ -1,0 +1,51 @@
+{% if invoice.state == 2 %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#invoice_finish_modal">
+        Set to Finished
+    </button>
+{% endif %}
+
+{% if invoice.state == 100 %}
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#invoice_rollback_unpaid_modal">
+        Rollback to Unpaid
+    </button>
+{% endif %}
+
+<div class="modal fade" id="invoice_finish_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Finish Invoice</h4>
+            </div>
+            <div class="modal-body">
+                Project Balance: {{ project_balance_amount }}
+
+                <br><br>
+                 <a class="btn btn-warning"
+               href="{% url 'horizon:admin:projects_invoice:finish_invoice' invoice.id %}?next={{ request.path }}&skip_balance=true">Finish without Deduct Balance</a>
+
+                 <a class="btn btn-success"
+               href="{% url 'horizon:admin:projects_invoice:finish_invoice' invoice.id %}?next={{ request.path }}">Finish and Deduct Balance</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="invoice_rollback_unpaid_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Rollback to Unpaid</h4>
+            </div>
+            <div class="modal-body">
+                Project Balance: {{ project_balance_amount }}
+                <br><br>
+
+                 <a class="btn btn-danger"
+               href="{% url 'horizon:admin:projects_invoice:rollback_to_unpaid' invoice.id %}?next={{ request.path }}&skip_balance=true">Rollback without Refund Balance</a>
+
+                 <a class="btn btn-warning"
+               href="{% url 'horizon:admin:projects_invoice:rollback_to_unpaid' invoice.id %}?next={{ request.path }}">Rollback and Refund Balance</a>
+            </div>
+        </div>
+    </div>
+</div>

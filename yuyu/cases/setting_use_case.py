@@ -17,6 +17,11 @@ class SettingUseCase:
 
         return response
 
+    def get_setting(self, request, key):
+        response = yuyu_client.get(request, f"settings/{key}").json()
+
+        return response
+
     def set_setting(self, request, key, value):
         return yuyu_client.patch(request, f"settings/{key}/", {
             "value": value

@@ -2,19 +2,10 @@
 {% block title %}{{ page_title }}{% endblock %}
 {% block main %}
     <a class="btn btn-default" href="?print=true" target="_blank">Download PDF</a>
-    {% if invoice.state == 2 %}
-        <a class="btn btn-primary"
-           href="{% url 'horizon:admin:projects_invoice:finish_invoice' invoice.id %}?next={{ request.path }}">Set to
-            Finished</a>
-    {% endif %}
+    {% include 'admin/projects_invoice/manage_invoice_modal.html' with invoice=invoice project_balance_amount=project_balance_amount %}
+    <br/>
+    <br/>
 
-    {% if invoice.state == 100 %}
-        <a class="btn btn-danger"
-           href="{% url 'horizon:admin:projects_invoice:rollback_to_unpaid' invoice.id %}?next={{ request.path }}">Rollback
-            to Unpaid</a>
-    {% endif %}
-    <br/>
-    <br/>
     {% include 'admin/projects_invoice/base_invoice.html' %}
 {% endblock %}
 {% block js %}

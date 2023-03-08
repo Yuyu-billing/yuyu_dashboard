@@ -23,6 +23,10 @@ class SettingForm(forms.SelfHandlingForm):
 
     invoice_tax = forms.IntegerField(label=_("INVOICE TAX (%)"),
                                      required=True)
+    invoice_auto_deduct_balance = forms.BooleanField(label=_("Invoice Auto Deduct Balance"),
+                                    required=False, )
+    how_to_top_up = forms.CharField(label=_("HOW TO TOP UP"),
+                                      required=True, widget=forms.Textarea())
 
     def clean(self):
         data = super(SettingForm, self).clean()
