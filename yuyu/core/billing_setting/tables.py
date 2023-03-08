@@ -12,7 +12,8 @@ class SettingName:
         "company_logo": _("Company Logo"),
         "company_address": _("Company Address"),
         "email_admin": _("Email Admin"),
-        "email_notification": _("Email Notification")
+        "email_notification": _("Email Notification"),
+        'how_to_top_up': _("How To Top Up"),
     }
 
     def get_setting_name(self, setting):
