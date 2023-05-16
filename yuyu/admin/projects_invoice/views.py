@@ -24,6 +24,8 @@ from djmoney.money import Money
 from horizon import exceptions
 from horizon import tables
 from horizon import views
+from horizon import tabs
+
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.yuyu.cases.invoice_use_case import InvoiceUseCase
 from .tables import InvoiceTable
@@ -31,6 +33,7 @@ from ...cases.balance_use_case import BalanceUseCase
 from ...cases.setting_use_case import SettingUseCase
 from ...core.usage_cost.tables import InstanceCostTable, VolumeCostTable, FloatingIpCostTable, RouterCostTable, \
     SnapshotCostTable, ImageCostTable
+from ...core.usage_cost.tabs import UsageCostTabs
 from ...core.utils.invoice_utils import state_to_text
 
 
@@ -105,6 +108,31 @@ class InvoiceView(views.APIView):
 
         return sum(instance_prices)
 
+
+class UsageCostTabView(tabs.TabbedTableView):
+    tab_group_class = UsageCostTabs
+    page_title = _("Usage Cost")
+    template_name = "admin/projects_invoice/cost_tabs.html"
+
+    invoice_uc = InvoiceUseCase()
+    balance_uc = BalanceUseCase()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    def get(self, request, *args, **kwargs):
+        request.invoice = self.invoice_uc.get_invoice(self.request, self.kwargs['id'],
+                                                      tenant_id=self.kwargs['project_id'])
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        balance = self.balance_uc.retrieve_by_project(self.request, self.kwargs['project_id'])
+        context['invoice'] = self.request.invoice
+        context['project_balance_amount'] = Money(amount=balance['amount'],
+                                                  currency=balance['amount_currency']) if balance else 0
+        return context
+    
 
 class UsageCostView(tables.MultiTableView):
     table_classes = (
