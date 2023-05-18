@@ -1,90 +1,27 @@
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License. You may obtain
-# a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations
-# under the License.
 import dateutil.parser
 from django.utils.timesince import timesince
 from django.utils.translation import ugettext_lazy as _
 from djmoney.money import Money
 
-from horizon import exceptions, tables, tabs
+from horizon import exceptions, tabs
 from openstack_dashboard import api
-from openstack_dashboard.dashboards.yuyu.cases.invoice_use_case import InvoiceUseCase
-from openstack_dashboard.dashboards.yuyu.core.usage_cost.tables import InstanceCostTable, VolumeCostTable, \
-    FloatingIpCostTable, RouterCostTable, SnapshotCostTable, ImageCostTable
-from openstack_dashboard.dashboards.yuyu.core.usage_cost.tabs import UsageCostTabs
+from openstack_dashboard.dashboards.yuyu.core.usage_cost.tables import (
+    InstanceCostTable, VolumeCostTable, FloatingIpCostTable, RouterCostTable, SnapshotCostTable, ImageCostTable
+)
 
 
-class IndexViewTab(tabs.TabbedTableView):
-
-    tab_group_class = UsageCostTabs
-    page_title = _("Usage Cost")
-    template_name = "project/usage_cost/index_tabs.html"
-
-    invoice_uc = InvoiceUseCase()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        request.invoice_list = self.invoice_uc.get_simple_list(self.request)
-        request.has_invoice = len(request.invoice_list) != 0
-
-        invoice_id = self.request.GET.get('invoice_id', None)
-        if not invoice_id and request.has_invoice:
-            invoice_id = request.invoice_list[0]['id']
-
-        request.invoice = self.invoice_uc.get_invoice(self.request, invoice_id) if request.has_invoice else {}
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['invoice_list'] = self.request.invoice_list
-        context['invoice'] = self.request.invoice
-        return context
-    
-
-class IndexView(tables.MultiTableView):
-    table_classes = (
-        InstanceCostTable, VolumeCostTable, FloatingIpCostTable, RouterCostTable, SnapshotCostTable, ImageCostTable)
-    page_title = _("Usage Cost")
-    template_name = "project/usage_cost/cost_tables.html"
-
-    invoice_uc = InvoiceUseCase()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        request.invoice_list = self.invoice_uc.get_simple_list(self.request)
-        request.has_invoice = len(request.invoice_list) != 0
-
-        invoice_id = self.request.GET.get('invoice_id', None)
-        if not invoice_id and request.has_invoice:
-            invoice_id = request.invoice_list[0]['id']
-
-        request.invoice = self.invoice_uc.get_invoice(self.request, invoice_id) if request.has_invoice else {}
-        return super(IndexView, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['invoice_list'] = self.request.invoice_list
-        context['invoice'] = self.request.invoice
-        return context
+class InstanceTab(tabs.TableTab):
+    table_classes = (InstanceCostTable,)
+    name = _("Instance")
+    slug = "instance"
+    template_name = 'horizon/common/_detail_table.html'
 
     def _get_flavor_name(self, flavor_id):
         try:
             return api.nova.flavor_get(self.request, flavor_id).name
         except Exception:
             return 'Invalid Flavor'
-
+        
     def get_instance_cost_data(self):
         try:
             datas = map(lambda x: {
@@ -97,13 +34,18 @@ class IndexView(tables.MultiTableView):
                 ),
                 "cost": Money(amount=x['price_charged'], currency=x['price_charged_currency'])
             }, self.request.invoice.get('instances', []))
-
             return datas
         except Exception:
             error_message = _('Unable to get instance cost')
             exceptions.handle(self.request, error_message)
-
             return []
+
+
+class VolumeTab(tabs.TableTab):
+    table_classes = (VolumeCostTable,)
+    name = _("Volume")
+    slug = "volume"
+    template_name = 'horizon/common/_detail_table.html'
 
     def _get_volume_name(self, volume_type_id):
         try:
@@ -128,8 +70,14 @@ class IndexView(tables.MultiTableView):
         except Exception:
             error_message = _('Unable to get volume cost')
             exceptions.handle(self.request, error_message)
-
             return []
+
+
+class FloatingIpTab(tabs.TableTab):
+    table_classes = (FloatingIpCostTable,)
+    name = _("Floating IP")
+    slug = "floating_ip"
+    template_name = 'horizon/common/_detail_table.html'
 
     def get_floating_ip_cost_data(self):
         try:
@@ -147,8 +95,14 @@ class IndexView(tables.MultiTableView):
         except Exception:
             error_message = _('Unable to get floating ip cost')
             exceptions.handle(self.request, error_message)
-
             return []
+
+
+class RouterTab(tabs.TableTab):
+    table_classes = (RouterCostTable,)
+    name = _("Router")
+    slug = "router"
+    template_name = 'horizon/common/_detail_table.html'
 
     def get_router_cost_data(self):
         try:
@@ -166,8 +120,14 @@ class IndexView(tables.MultiTableView):
         except Exception:
             error_message = _('Unable to get router cost')
             exceptions.handle(self.request, error_message)
-
             return []
+
+
+class SnapshotTab(tabs.TableTab):
+    table_classes = (SnapshotCostTable,)
+    name = _("Snapshot")
+    slug = "snapshot"
+    template_name = 'horizon/common/_detail_table.html'
 
     def get_snapshot_cost_data(self):
         try:
@@ -186,8 +146,14 @@ class IndexView(tables.MultiTableView):
         except Exception:
             error_message = _('Unable to get snapshot cost')
             exceptions.handle(self.request, error_message)
-
             return []
+
+
+class ImageTab(tabs.TableTab):
+    table_classes = (ImageCostTable,)
+    name = _("Image")
+    slug = "image"
+    template_name = 'horizon/common/_detail_table.html'
 
     def get_image_cost_data(self):
         try:
@@ -206,5 +172,10 @@ class IndexView(tables.MultiTableView):
         except Exception:
             error_message = _('Unable to get images cost')
             exceptions.handle(self.request, error_message)
-
             return []
+
+
+class UsageCostTabs(tabs.TabGroup):
+    slug = "usage_cost"
+    tabs = (InstanceTab, VolumeTab, FloatingIpTab, RouterTab, SnapshotTab, ImageTab, )
+    sticky = True

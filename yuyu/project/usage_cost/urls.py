@@ -16,5 +16,5 @@ from openstack_dashboard.dashboards.yuyu.project.usage_cost import views
 
 
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
+    url(r'^$', views.IndexViewTab.as_view(), name='index'),
 ]
