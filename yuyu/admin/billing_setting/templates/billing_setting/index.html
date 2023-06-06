@@ -16,14 +16,24 @@
     <div class="row">
         <div class="col-sm-12">
             {% if setting.billing_enabled %}
-                <h1>Billing Enabled</h1> <br/>
-                <a href="{% url 'horizon:admin:billing_setting:disable_billing' %}" class="btn btn-primary">Disable Billing</a>
+                <div class="panel panel-success">
+                    <div class="panel-heading">Status: Billing Enabled</div>
+                    <div class="panel-body">
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#modal_disable_billing">Disable Billing</button>
+                    </div>
+                </div>
             {% else %}
-                <h1>Billing Disabled</h1> <br/>
-                <p>Please make sure all price is already configured before enable billing</p>
-                <a href="{% url 'horizon:admin:billing_setting:enable_billing' %}" class="btn btn-primary {% if missing_price.has_missing or missing_setting.has_missing %} disabled {% endif %}">Enable</a>
-                <a href="{% url 'horizon:admin:billing_setting:reset_billing' %}" class="btn btn-danger">Reset Billing Data</a>
+                <div class="panel panel-danger">
+                    <div class="panel-heading">Status: Billing Disabled</div>
+                    <div class="panel-body">
+                        <p>Please make sure all price is already configured before enable billing</p>
+                        <a href="{% url 'horizon:admin:billing_setting:enable_billing' %}" class="btn btn-primary {% if missing_price.has_missing or missing_setting.has_missing %} disabled {% endif %}">Enable</a>
+                        <a href="{% url 'horizon:admin:billing_setting:reset_billing' %}" class="btn btn-danger">Reset Billing Data</a>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>
+
+    {% include "admin/billing_setting/modal_disable_billing.html" with modal_backdrop='static' hide=True %}
 {% endblock %}
