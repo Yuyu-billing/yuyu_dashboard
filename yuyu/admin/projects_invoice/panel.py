@@ -18,3 +18,5 @@ import horizon
 class ProjectsInvoice(horizon.Panel):
     name = _("Projects Invoice")
     slug = "projects_invoice"
+    permissions = ('openstack.roles.admin', )
+

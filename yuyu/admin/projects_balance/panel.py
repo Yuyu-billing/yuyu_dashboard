@@ -18,3 +18,5 @@ import horizon
 class ProjectsBalance(horizon.Panel):
     name = _("Projects Balance")
     slug = "projects_balance"
+    permissions = ('openstack.roles.admin', )
+

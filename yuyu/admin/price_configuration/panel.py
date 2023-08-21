@@ -18,3 +18,5 @@ import horizon
 class PriceConfiguration(horizon.Panel):
     name = _("Price Configuration")
     slug = "price_configuration"
+    permissions = ('openstack.roles.admin', )
+    

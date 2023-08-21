@@ -18,3 +18,5 @@ import horizon
 class BillingSetting(horizon.Panel):
     name = _("Billing Setting")
     slug = "billing_setting"
+    permissions = ('openstack.roles.admin', )
+

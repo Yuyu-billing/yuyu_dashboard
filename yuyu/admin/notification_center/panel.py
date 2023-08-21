@@ -18,3 +18,5 @@ import horizon
 class NotificationCenter(horizon.Panel):
     name = _("Notification Center")
     slug = "notification_center"
+    permissions = ('openstack.roles.admin', )
+
