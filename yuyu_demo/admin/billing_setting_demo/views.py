@@ -20,7 +20,6 @@ class IndexView(views.IndexView):
 
 class UpdateSettingView(views.UpdateSettingView):
     form_class = forms.SettingForm
-    
     submit_url = ''
     success_url = ''
     template_name = 'yuyu_demo/billing_setting_demo/form_setting.html'

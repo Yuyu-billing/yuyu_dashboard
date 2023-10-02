@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 
 from horizon import tables
 from ....yuyu.cases.flavor_price_use_case import FlavorPriceUseCase
@@ -17,14 +17,14 @@ class BaseDeletePrice(tables.DeleteAction):
     plural_action_label = None
 
     def action_present(self, count):
-        return _(
+        return ungettext_lazy(
             "Delete " + self.single_action_label,
             "Delete " + self.plural_action_label,
             count
         )
 
     def action_past(self, count):
-        return _(
+        return ungettext_lazy(
             "Deleted " + self.single_action_label,
             "Deleted " + self.plural_action_label,
             count
