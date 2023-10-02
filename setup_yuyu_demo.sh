@@ -6,7 +6,7 @@ root=`pwd -P`
 
 echo "Creating Symlink"
 ln -sf $root/yuyu_demo $horizon_path/openstack_dashboard/dashboards
-ln -sf $root/yuyu_demo/local/enabled/_6600_yuyu.py $horizon_path/openstack_dashboard/local/enabled/_6600_yuyu.py
+ln -sf $root/yuyu_demo/local/enabled/_6600_yuyu_demo.py $horizon_path/openstack_dashboard/local/enabled/_6600_yuyu_demo.py
 ln -sf $root/yuyu_demo/local/enabled/_6601_admin_billing_panel_group.py $horizon_path/openstack_dashboard/local/enabled/_6601_admin_billing_panel_group.py
 ln -sf $root/yuyu_demo/local/enabled/_6602_admin_billing_overview.py $horizon_path/openstack_dashboard/local/enabled/_6602_admin_billing_overview.py
 ln -sf $root/yuyu_demo/local/enabled/_6603_admin_billing_price_configuration.py $horizon_path/openstack_dashboard/local/enabled/_6603_admin_billing_price_configuration.py
