@@ -10,7 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 from django import shortcuts
-from .tables import NotificationTable
 from ....yuyu.admin.notification_center import views
 
 
