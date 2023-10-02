@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=page_title %}
+{% endblock page_header %}
+
+{% block main %}
+    <h3>Current Balance: {{ amount }}</h3>
+    {{ table.render }}
+{% endblock %}
+{% block js %}
+    {{ block.super }}
+{% endblock %}

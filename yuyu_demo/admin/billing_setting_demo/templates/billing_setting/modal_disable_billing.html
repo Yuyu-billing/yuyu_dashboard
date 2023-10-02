@@ -1,0 +1,15 @@
+{% extends "horizon/common/_modal.html" %}
+{% load i18n %}
+
+{% block modal_id %}modal_disable_billing{% endblock %}
+{% block modal_backdrop %}static{% endblock %}
+{% block modal-header %}{% trans "Confirmation" %}{% endblock %}
+
+{% block modal-body %}
+    <p>{% trans "Are you sure to disable billing?" %}</p>
+{% endblock %}
+
+{% block modal-footer %}
+    <a href='#' class='btn btn-danger cancel' data-dismiss='modal'>{% trans "No" %}</a>
+    <a href="{% url 'horizon:admin:billing_setting:disable_billing' %}" class="btn btn-primary">{% trans "Yes" %}</a>
+{% endblock %}
