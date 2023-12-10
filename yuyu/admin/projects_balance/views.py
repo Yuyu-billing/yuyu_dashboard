@@ -34,7 +34,7 @@ class IndexView(tables.DataTableView):
     def get_data(self):
         try:
             data = []
-            project_list, has_more = api.keystone.tenant_list(self.request, user=self.request.user.id)
+            project_list, has_more = api.keystone.tenant_list(self.request)
             for d in self.balance_uc.list(self.request):
                 project = list(filter(lambda x: x.id == d['project']['tenant_id'], project_list))
                 project_name = 'Unknown Project'

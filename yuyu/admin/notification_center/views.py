@@ -41,7 +41,7 @@ class IndexView(tables.DataTableView):
         if hasattr(self, "table"):
             context[self.context_object_name] = self.table
 
-        context['select_list'], _ = api.keystone.tenant_list(self.request, user=self.request.user.id)
+        context['select_list'], _ = api.keystone.tenant_list(self.request)
         context['current_tenant_id'] = self.request.GET.get('tenant_id', None)
 
         return context
@@ -67,6 +67,7 @@ class ReadAllView(views.APIView):
         try:
             notifications = self.notification_uc.get_list(self.request,
                                                           filter_selection=self.kwargs['selection'])
+            
             for n in notifications:
                 if not n["is_read"]:
                     self.notification_uc.set_read(request, n['id'])

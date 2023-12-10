@@ -111,3 +111,15 @@ class ResetBillingView(views.APIView):
             exceptions.handle(self.request,
                               _("Unable to reset billing"))
         return shortcuts.redirect("horizon:admin:billing_setting:index")
+
+class ResetTransactionView(views.APIView):
+    invoice_uc = InvoiceUseCase()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.invoice_uc.reset_transaction(request)
+            messages.success(request, _("Data successfully Reset."))
+        except Exception:
+            exceptions.handle(self.request,
+                              _("Unable to reset transaction"))
+        return shortcuts.redirect("horizon:admin:billing_setting:index")

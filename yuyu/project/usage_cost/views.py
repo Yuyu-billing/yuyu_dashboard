@@ -17,6 +17,7 @@ from djmoney.money import Money
 from horizon import exceptions, tables, tabs
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.yuyu.cases.invoice_use_case import InvoiceUseCase
+from openstack_dashboard.dashboards.yuyu.cases.setting_use_case import SettingUseCase
 from openstack_dashboard.dashboards.yuyu.core.usage_cost.tables import InstanceCostTable, VolumeCostTable, \
     FloatingIpCostTable, RouterCostTable, SnapshotCostTable, ImageCostTable
 from openstack_dashboard.dashboards.yuyu.core.usage_cost.tabs import UsageCostTabs
@@ -51,13 +52,14 @@ class IndexViewTab(tabs.TabbedTableView):
         return context
     
 
-class IndexView(tables.MultiTableView):
+class DownloadView(tables.MultiTableView):
     table_classes = (
         InstanceCostTable, VolumeCostTable, FloatingIpCostTable, RouterCostTable, SnapshotCostTable, ImageCostTable)
     page_title = _("Usage Cost")
-    template_name = "project/usage_cost/cost_tables.html"
+    template_name = "project/usage_cost/cost_download.html"
 
     invoice_uc = InvoiceUseCase()
+    setting_uc = SettingUseCase()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -71,12 +73,14 @@ class IndexView(tables.MultiTableView):
             invoice_id = request.invoice_list[0]['id']
 
         request.invoice = self.invoice_uc.get_invoice(self.request, invoice_id) if request.has_invoice else {}
-        return super(IndexView, self).get(request, *args, **kwargs)
+        return super(DownloadView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['invoice_list'] = self.request.invoice_list
         context['invoice'] = self.request.invoice
+        context['setting'] = self.setting_uc.get_settings(self.request)
+        
         return context
 
     def _get_flavor_name(self, flavor_id):

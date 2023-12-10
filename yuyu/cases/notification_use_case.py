@@ -3,7 +3,7 @@ from openstack_dashboard.dashboards.yuyu.core import yuyu_client
 
 class NotificationCenterUseCase:
     def get_list(self, request, filter_selection=None):
-        if filter_selection is None:
+        if filter_selection is None or filter_selection == 'None':
             return yuyu_client.get(request, f"notification/").json()
 
         return yuyu_client.get(request, f"notification/?tenant_id={filter_selection}").json()

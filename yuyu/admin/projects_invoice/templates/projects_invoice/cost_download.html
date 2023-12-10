@@ -1,0 +1,139 @@
+<html>
+  <head>
+    <title>Invoice Download</title>
+    {% include '_stylesheets.html' %}
+  </head>
+  <body>
+    <style>
+      .invoice {
+        padding: 30px;
+      }
+      
+      .invoice h2 {
+        margin-top: 0px;
+        line-height: 0.8em;
+      }
+      
+      .invoice .small {
+        font-weight: 300;
+      }
+      
+      .invoice hr {
+        margin-top: 10px;
+        border-color: #ddd;
+      }
+      
+      .invoice .table tr.line {
+        border-bottom: 1px solid #ccc;
+      }
+      
+      .invoice .table td {
+        border: none;
+      }
+      
+      .invoice .identity {
+        margin-top: 10px;
+        font-size: 1.1em;
+        font-weight: 300;
+      }
+      
+      .invoice .identity strong {
+        font-weight: 600;
+      }
+      
+      .grid {
+        position: relative;
+        width: 100%;
+        background: #fff;
+        color: #666666;
+        border-radius: 2px;
+        margin-bottom: 25px;
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+    <div id="invoice">
+      <div class="container">
+        <div class="row">
+          <!-- BEGIN INVOICE -->
+          <div class="col-xs-12">
+            <div class="grid invoice">
+              <div class="grid-body">
+                <div class="invoice-title">
+                  <div class="row">
+                    <div class="col-xs-12">{{ setting.company_logo }}</div>
+                  </div>
+                  <br />
+                  <div class="row">
+                    <div class="col-xs-12">
+                      <h2>
+                        invoice<br />
+                        <span class="small">order #{{ invoice.id }}</span>
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div class="row">
+                  <div class="col-xs-6">
+                    <address style="max-width: 30%;">
+                      {{ setting.company_name }} <br />
+                      {{ setting.company_address }}
+                    </address>
+                  </div>
+                  <div class="col-xs-6 text-right">
+                    <address>
+                      <strong>Invoice Month:</strong><br />
+                      {{ invoice.start_date|date:'M Y' }}
+                      <br />
+                      <br />
+                      <strong>Invoice State:</strong><br />
+                      {{ invoice.state_text }}
+                      <br />
+                      <br />
+                      <strong>Subtotal</strong><br />
+                      {{ invoice.subtotal_money }}
+                      <br />
+                      <br />
+                      {% if invoice.state != 1 %}
+                        <strong>Tax</strong><br />
+                        {{ invoice.tax_money }}
+                        <br />
+                        <br />
+                        <strong>Total</strong><br />
+                        {{ invoice.total_money }}
+                        <br />
+                        <br />
+                      {% endif %}
+                    </address>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <h3>ORDER SUMMARY</h3>
+                    <br />
+                    <br />
+                    <div id="usage_cost">
+                      <div id="instance-cost">{{ instance_cost_table.render }}</div>
+
+                      <div id="volume-cost">{{ volume_cost_table.render }}</div>
+                      <div id="floating-ip-cost">{{ floating_ip_cost_table.render }}</div>
+                      <div id="router-cost">{{ router_cost_table.render }}</div>
+                      <div id="snapshot-cost">{{ snapshot_cost_table.render }}</div>
+                      <div id="image-cost">{{ image_cost_table.render }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- END INVOICE -->
+        </div>
+      </div>
+    </div>
+
+    {% include 'horizon/_scripts.html' %}
+    <script type="text/javascript">
+      window.print()
+    </script>
+  </body>
+</html>

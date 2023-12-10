@@ -14,7 +14,7 @@
                 <div class="col-md-6">
                     <span class="pull-right" data-html2canvas-ignore="true">
                         {% include 'admin/projects_invoice/manage_invoice_modal.html' with invoice=invoice project_balance_amount=project_balance_amount %}
-                        <button onclick="javascript:downloadPdf();" class="btn btn-default">Download PDF</button>
+                        <a href="{% url "horizon:admin:projects_invoice:usage_cost_print" project_id invoice.id %}" target="_blank" class="btn btn-default">Download PDF</a>
                     </span>
                 </div>
             </div>
@@ -79,36 +79,3 @@
     {% endif %}
 {% endblock %}
 
-{% block js %}
-    {{ block.super }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-            integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script type="text/javascript">
-        function downloadPdf() {
-            let opt = {
-                filename: 'usage_cost.pdf',
-                margin: [16, 16],
-                enableLinks: true,
-                image: {type: 'jpeg', quality: 0.98},
-                pagebreak: { mode: 'avoid-all', },
-                jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'},
-            }
-
-            // clone element to modify
-            const ucElement = document.getElementById('usage_cost');
-            const ucElementClone = ucElement.cloneNode(true);
-            
-            // modify element
-            const navTabs = ucElementClone.querySelector('.nav-tabs');
-            navTabs.style.display = 'none';
-            const tabContent = ucElementClone.querySelectorAll('.tab-pane');
-            tabContent.forEach(content => {
-                content.classList.remove("tab-pane");
-            });
-
-            html2pdf().set(opt).from(ucElementClone).save();
-        }
-    </script>
-{% endblock %}

@@ -46,7 +46,7 @@ class IndexView(tables.DataTableView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['project_list'], _ = api.keystone.tenant_list(self.request, user=self.request.user.id)
+        context['project_list'], _ = api.keystone.tenant_list(self.request)
         context['current_project_id'] = self.request.GET.get('project_id', self.request.user.project_id)
         context['current_project_name'] = self.request.GET.get('project_name', self.request.user.project_id)
         return context
@@ -129,6 +129,7 @@ class UsageCostTabView(tabs.TabbedTableView):
         context = super().get_context_data(**kwargs)
         balance = self.balance_uc.retrieve_by_project(self.request, self.kwargs['project_id'])
         context['invoice'] = self.request.invoice
+        context['project_id'] = self.kwargs['project_id']
         context['project_balance_amount'] = Money(amount=balance['amount'],
                                                   currency=balance['amount_currency']) if balance else 0
         return context
@@ -138,10 +139,12 @@ class UsageCostView(tables.MultiTableView):
     table_classes = (
         InstanceCostTable, VolumeCostTable, FloatingIpCostTable, RouterCostTable, SnapshotCostTable, ImageCostTable)
     page_title = _("Usage Cost")
-    template_name = "admin/projects_invoice/cost_tables.html"
+    template_name = "admin/projects_invoice/cost_download.html"
 
     invoice_uc = InvoiceUseCase()
     balance_uc = BalanceUseCase()
+    setting_uc = SettingUseCase()
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -154,6 +157,7 @@ class UsageCostView(tables.MultiTableView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         balance = self.balance_uc.retrieve_by_project(self.request, self.kwargs['project_id'])
+        context['setting'] = self.setting_uc.get_settings(self.request)
         context['invoice'] = self.request.invoice
         context['project_balance_amount'] = Money(amount=balance['amount'],
                                                   currency=balance['amount_currency']) if balance else 0

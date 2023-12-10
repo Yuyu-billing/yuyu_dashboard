@@ -28,7 +28,8 @@
                     <div class="panel-body">
                         <p>Please make sure all price is already configured before enable billing</p>
                         <a href="{% url 'horizon:admin:billing_setting:enable_billing' %}" class="btn btn-primary {% if missing_price.has_missing or missing_setting.has_missing %} disabled {% endif %}">Enable</a>
-                        <a href="{% url 'horizon:admin:billing_setting:reset_billing' %}" class="btn btn-danger">Reset Billing Data</a>
+                        <a href="{% url 'horizon:admin:billing_setting:reset_billing' %}" class="btn btn-danger">Reset All Billing Data</a>
+                        <a href="{% url 'horizon:admin:billing_setting:reset_transaction' %}" class="btn btn-danger">Reset Transaction Data</a>
                     </div>
                 </div>
             {% endif %}

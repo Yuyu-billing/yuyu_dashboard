@@ -109,6 +109,9 @@ class InvoiceUseCase:
 
     def reset_billing(self, request):
         yuyu_client.post(request, f"invoice/reset_billing/", {})
+        
+    def reset_transaction(self, request):
+        yuyu_client.post(request, f"invoice/reset_transaction_data/", {})
 
     def finish_invoice(self, request, id, skip_balance):
         response = yuyu_client.get(request, f"invoice/{id}/finish/?skip_balance={skip_balance}")

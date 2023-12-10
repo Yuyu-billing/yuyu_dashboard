@@ -17,4 +17,5 @@ from openstack_dashboard.dashboards.yuyu.project.usage_cost import views
 
 urlpatterns = [
     url(r'^$', views.IndexViewTab.as_view(), name='index'),
+    url(r'^download/$', views.DownloadView.as_view(), name='download'),
 ]
